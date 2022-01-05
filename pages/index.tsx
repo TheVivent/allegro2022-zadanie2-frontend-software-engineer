@@ -31,12 +31,13 @@ const Home: NextPage = () => {
   const getUsers = async (username: string) => {
     const res = await octokit.rest.search.users({
       q: `type:user ${username} in:login`,
-      per_page: 10,
+      per_page: 8,
       page: page,
     });
 
     if (res.status === 200) {
       setUsers(res.data.items as GitHubUser[]);
+      console.log(res.data.items);
     }
   };
 

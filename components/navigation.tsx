@@ -31,11 +31,11 @@ export default function Navigation() {
         </Link>
         <div className="ms-auto">
           <Form className="d-flex text-dark" onSubmit={handleFormSubmit}>
-            <FloatingLabel label="Szukaj użytkowników">
+            <FloatingLabel label="Szukaj">
               <Form.Control
                 type="search"
                 name="search"
-                placeholder="Szukaj użytkowników"
+                placeholder="Szukaj"
                 value={searchQuerry}
                 onChange={(e) => setSearchQuerry(e.target.value)}
               />
