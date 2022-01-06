@@ -1,15 +1,16 @@
 import { useContext, useEffect, useState } from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
-import styles from "../styles/Home.module.css";
 import { Octokit } from "@octokit/rest";
 import { SearchContext } from "../components/navigation";
-import type { GitHubUser } from "../types";
+// import type { GitHubUser } from "../types";
 import UserCard from "../components/usercard";
 import { Container, Row } from "react-bootstrap";
+import { Endpoints } from "@octokit/types";
 
 const octokit = new Octokit();
+type GitHubUser =
+  Endpoints["GET /search/users"]["response"]["data"]["items"][0];
 
 const Home: NextPage = () => {
   const [users, setUsers] = useState<GitHubUser[]>([]);
@@ -42,7 +43,7 @@ const Home: NextPage = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
         <title>Allegro</title>
         <meta name="description" content="Search" />

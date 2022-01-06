@@ -1,8 +1,12 @@
-import type { GitHubUser } from "../types";
 import Image from "next/image";
 import { Col } from "react-bootstrap";
 import useViewport from "../components/useViewport";
 import { CSSProperties, useRef } from "react";
+import { Endpoints } from "@octokit/types";
+
+type GitHubUser =
+  Endpoints["GET /search/users"]["response"]["data"]["items"][0];
+
 interface Props {
   user: GitHubUser;
 }
