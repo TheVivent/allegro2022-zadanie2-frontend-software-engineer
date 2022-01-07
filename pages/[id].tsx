@@ -1,37 +1,44 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Endpoints } from "@octokit/types";
-
 import { Octokit } from "@octokit/rest";
-import { Container, Row, Col, Form, FloatingLabel } from "react-bootstrap";
-import Image from "next/image";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  FloatingLabel,
+  Pagination,
+} from "react-bootstrap";
+import RepoCard from "../components/repocard";
+import LoadingSpinner from "../components/loader";
+import UserBanner from "../components/page/home/id/userbanner";
 
 const octokit = new Octokit();
 type GitHubUser = Endpoints["GET /users/{username}"]["response"]["data"];
 type GitHubRepo =
-  Endpoints["GET /users/{username}/repos"]["response"]["data"][0];
+  Endpoints["GET /search/repositories"]["response"]["data"]["items"][0];
 
-type GitHubSorting = "created" | "updated" | "pushed" | "full_name" | undefined;
-
-// const SORTING_OPTIONS = {
-//   created: "Utworzono",
-//   updated: "Zaktualizowano",
-//   pushed: "Ostatnio zmieniony",
-//   full_name: "Nazwa",
-//   undefined: "Najnowsze",
-
-//   //   Utworzono: "created",
-//   //   "Ostatnia aktualizacja": "updated",
-//   //   "Ostatnia zmiana": "pushed",
-//   //   Nazwa: "full_name",
-//   //   Najpopularniejsze: "undefined",
-// };
+type GitHubSorting =
+  | "updated"
+  | "stars"
+  | "forks"
+  | "help-wanted-issues"
+  | undefined;
 
 export default function Page() {
   const user_id = useRouter().query.id;
   const [user, setUser] = useState<GitHubUser | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
+
+  const [repoSearch, setRepoSearch] = useState("");
   const [repos, setRepos] = useState<GitHubRepo[] | null>(null);
-  const [sorting, setSorting] = useState<GitHubSorting>(undefined);
+  const [reposLoading, setReposLoading] = useState(true);
+  const [sorting, setSorting] = useState<GitHubSorting>("stars");
+  const perPage = 20;
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(0);
+  const [timer, setTimer] = useState<any>(null);
 
   useEffect(() => {
     getUser();
@@ -42,116 +49,159 @@ export default function Page() {
     // ze względu na to, aby jak najmniej wywoływać API
     // (np jeżeli użytkownik nie istnieje)
     getRepos();
-  }, [user, sorting]);
+  }, [user, sorting, page]);
 
   const getUser = async () => {
+    clearTimeout(timer);
+    setUserLoading(true);
     if (typeof user_id !== "string") return;
-    const data = await octokit.rest.users.getByUsername({
-      username: user_id,
-    });
+    let data;
+
+    try {
+      data = await octokit.rest.users.getByUsername({
+        username: user_id,
+      });
+    } catch (e) {
+      // w przypadku błędu (ograniczenie ilości zapytań)
+      // spróbuj ponownie za 3 sekundy
+      setTimer(
+        setTimeout(() => {
+          getUser();
+        }, 3000)
+      );
+      return;
+    }
 
     if (data.status === 200) {
       setUser(data.data);
     }
-    console.log(data);
+    setUserLoading(false);
   };
 
   const getRepos = async () => {
+    setReposLoading(true);
+    clearTimeout(timer);
     if (user === null) return;
 
-    const data = await octokit.rest.repos.listForUser({
-      username: user.login as string,
-      sort: sorting,
-      order: "asc",
-    });
+    let data;
+    try {
+      data = await octokit.rest.search.repos({
+        q: `user:${user.login} ${repoSearch} in:name`,
+        sort: sorting as GitHubSorting,
+        order: "desc",
+        per_page: perPage,
+        page: page,
+      });
+    } catch (e) {
+      // w przypadku błędu (ograniczenie ilości zapytań)
+      // spróbuj ponownie za 3 sekundy
+      setTimer(
+        setTimeout(() => {
+          getRepos();
+        }, 3000)
+      );
+      return;
+    }
 
     if (data.status === 200) {
-      let repos = data.data;
-      if (sorting === undefined) {
-        repos = repos.sort((a, b) => {
-          const a_stars = a.stargazers_count ?? 0;
-          const b_stars = b.stargazers_count ?? 0;
-          return b_stars - a_stars;
-        });
-      }
-      setRepos(repos);
+      setRepos(data.data.items);
+      setPages(Math.ceil(data.data.total_count / perPage));
     }
-    console.log(data);
+
+    setReposLoading(false);
   };
 
-  if (user === null) return <div>Loading...</div>;
+  const handleRepoForm = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    getRepos();
+  };
+
+  if (userLoading || user === null) return <LoadingSpinner />;
+
+  // wyświetlanie Baneru użytkownika znajduje się w
+  // components/page/home/id/userbanner.tsx
+  // aby ograniczyć ilość kodu w jednym pliku
+
+  // nie wykonałem tego dla repozytoriów,
+  // ze względu na większą ilość logiki która
+  // jest potrzebna do ich obsługi
 
   return (
     <Container>
-      <Row className="bg-warning rounded-3 mt-3 p-1 pb-2">
-        <Col xs={12} md={4} className="text-center text-md-start">
-          <Image
-            src={user.avatar_url as string}
-            alt={user.name + "avatar"}
-            width={256}
-            height={256}
-            className="rounded-circle shadow-sm"
-          />
-        </Col>
-        <Col xs={12} md={8}>
-          <div>
-            <h1>{user.login as string}</h1>
-            <h6>{user.name as string}</h6>
-          </div>
-          <div className="d-flex">
-            <div className="flex-fill">
-              Obserwujących: {user.followers as number}
-            </div>
-            <div className="flex-fill">
-              Obserwuje: {user.following as number}
-            </div>
-            <div className="flex-fill">
-              Repozytoriów: {user.public_repos as number}
-            </div>
-          </div>
-        </Col>
-      </Row>
+      <UserBanner user={user} />
       <Row className="bg-light text-dark rounded-3 mt-3 p-1 pb-2">
-        {repos === null ? (
-          <div>Loading...</div>
-        ) : (
-          <Container>
-            <Row className="p-1">
-              <Col xs={12}>
-                <h3 className="float-start">Repozytoria</h3>
-                <div className="float-end">
-                  <Form>
-                    <Form.Group>
-                      <FloatingLabel label="Sortuj według">
-                        <Form.Select
-                          size="lg"
-                          value={sorting}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setSorting(
-                              val === "" ? undefined : (val as GitHubSorting)
-                            );
-                          }}
-                        >
-                          <option value="created">Utworzono</option>
-                          <option value="updated">Zaktualizowano</option>
-                          <option value="pushed">Ostatnio zmieniony</option>
-                          <option value="full_name">Nazwa</option>
-                          <option value="">Najpopularniejsze</option>
-                        </Form.Select>
-                      </FloatingLabel>
-                    </Form.Group>
-                  </Form>
-                </div>
+        <Container className="position-relative">
+          {reposLoading ? <LoadingSpinner /> : null}
+          <Row className="p-1">
+            <Col xs={12}>
+              <h3 className="float-start">Repozytoria</h3>
+              <div className="float-end">
+                <Form className="d-flex" onSubmit={handleRepoForm}>
+                  <FloatingLabel label="Szukaj">
+                    <Form.Control
+                      type="search"
+                      name="search"
+                      placeholder="Szukaj"
+                      value={repoSearch}
+                      onChange={(e) => setRepoSearch(e.target.value)}
+                    />
+                  </FloatingLabel>
+                  <FloatingLabel label="Sortuj według">
+                    <Form.Select
+                      size="lg"
+                      value={sorting}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setSorting(
+                          val === "" ? undefined : (val as GitHubSorting)
+                        );
+                      }}
+                    >
+                      <option value="">Najlepsze dopasowanie</option>
+                      <option value="stars">Gwiazdki</option>
+                      <option value="updated">Ostatnia aktualizacja</option>
+                      {/* <option value="forks">Najlepiej oceniane</option>     */}
+                    </Form.Select>
+                  </FloatingLabel>
+                </Form>
+              </div>
+            </Col>
+          </Row>
+          <Row className="d-flex flex-wrap align-items-stretch ">
+            {repos?.map((repo) => (
+              <Col key={repo.id} xs={12} md={3} className="d-flex flex-column">
+                <RepoCard repo={repo} />
               </Col>
-            </Row>
-            <Row xs={1}>
-              {repos.map((repo) => (
-                <Col key={repo.id}>{repo.name}</Col>
-              ))}
-            </Row>
-          </Container>
-        )}
+            ))}
+          </Row>
+          <Row>
+            <Col xs={12} className="">
+              <Pagination className="my-2">
+                <Pagination.Prev
+                  className="ms-auto"
+                  disabled={page === 1}
+                  onClick={() => setPage(page - 1)}
+                />
+
+                {Array.from(Array(pages), (x, i) => (
+                  <Pagination.Item
+                    onClick={() => setPage(i + 1)}
+                    active={page === i + 1}
+                  >
+                    {i + 1}
+                  </Pagination.Item>
+                ))}
+
+                <Pagination.Next
+                  className="me-auto"
+                  disabled={page === pages}
+                  onClick={() => setPage(page + 1)}
+                />
+              </Pagination>
+            </Col>
+          </Row>
+        </Container>
+        {/* )} */}
       </Row>
     </Container>
   );

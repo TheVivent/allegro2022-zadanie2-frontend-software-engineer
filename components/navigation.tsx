@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useCurrentTheme } from "use-theme-hook";
 import { createContext, useContext, useState } from "react";
 import { useRouter } from "next/router";
+import { BsSearch } from "react-icons/bs";
 
 export const SearchContext = createContext<[any, any]>(["", () => {}]);
 export const SearchProvider = ({ children }: any) => {
@@ -43,8 +44,8 @@ export default function Navigation() {
                 onChange={(e) => setSearchQuerry(e.target.value)}
               />
             </FloatingLabel>
-            <Button type="submit" variant="success">
-              Szukaj
+            <Button type="submit" variant="success" className="ms-1 px-4">
+              <BsSearch />
             </Button>
           </Form>
         </div>

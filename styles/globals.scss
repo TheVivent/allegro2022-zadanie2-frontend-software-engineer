@@ -35,10 +35,18 @@
     --#{$variable-prefix}#{$color}-rgb: #{$value};
   }
 
-  $body-color: #eeeeee;
-  $body-bg: #263c5c;
+  // $body-color: #eeeeee;
+  // $body-bg: #263c5c;
 
-  --#{$variable-prefix}body-color: #{$body-color};
-  --#{$variable-prefix}body-bg: #{$body-bg};
+  // --#{$variable-prefix}body-color: #{$body-color};
+  // --#{$variable-prefix}body-bg: #{$body-bg};
 }
 @import "~bootstrap/scss/bootstrap";
+
+body {
+  background-color: #5e91df;
+}
+
+body.dark {
+  background-color: #263c5c;
+}
