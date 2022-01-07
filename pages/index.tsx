@@ -22,11 +22,7 @@ const Home: NextPage = () => {
   }, []);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      getUsers(searchQuerry);
-    }, 3000);
-
-    return () => clearTimeout(timeout);
+    getUsers(searchQuerry);
   }, [searchQuerry, page]);
 
   const getUsers = async (username: string) => {

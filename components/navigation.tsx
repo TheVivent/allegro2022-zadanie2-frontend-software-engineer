@@ -2,6 +2,7 @@ import { FloatingLabel, Form, Navbar, Button, Nav } from "react-bootstrap";
 import Link from "next/link";
 import { useCurrentTheme } from "use-theme-hook";
 import { createContext, useContext, useState } from "react";
+import { useRouter } from "next/router";
 
 export const SearchContext = createContext<[any, any]>(["", () => {}]);
 export const SearchProvider = ({ children }: any) => {
@@ -14,6 +15,7 @@ export const SearchProvider = ({ children }: any) => {
 };
 
 export default function Navigation() {
+  const router = useRouter();
   const theme = useCurrentTheme();
   const [search, setSearch] = useContext(SearchContext);
   const [searchQuerry, setSearchQuerry] = useState(search);
@@ -21,6 +23,7 @@ export default function Navigation() {
   const handleFormSubmit = (e: any) => {
     e.preventDefault();
     setSearch(e.target.elements.search.value);
+    router.push(`/`);
   };
 
   return (
