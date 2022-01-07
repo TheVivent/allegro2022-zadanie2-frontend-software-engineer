@@ -24,7 +24,7 @@ export default function UserCard({ user }: Props) {
             }
           >
             <Image
-              className="rounded-circle border border-dark border-2 align-self-center align-self-md-auto"
+              className="rounded-circle border-2 align-self-center align-self-md-auto shadow-sm"
               src={user.avatar_url}
               alt={user.login + "avatar"}
               width={breakpoint === "xs" ? 64 : 128}

@@ -4,13 +4,13 @@
 
 .dark {
   /* redefine theme colors for dark theme */
-  $primary: $dark;
+  $primary: #052a63;
   $secondary: #e01313;
-  $success: #222222;
-  $info: #1e5dd1;
-  $warning: $warning;
+  $success: $success;
+  $info: $info;
+  $warning: #cc9a05;
   $danger: $danger;
-  $light: $light;
+  $light: #c5c6c6;
   $dark: $dark;
 
   $theme-colors: (
