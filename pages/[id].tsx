@@ -59,8 +59,6 @@ export default function Page() {
   const getRepos = async () => {
     if (user === null) return;
 
-    alert(sorting);
-
     const data = await octokit.rest.repos.listForUser({
       username: user.login as string,
       sort: sorting,

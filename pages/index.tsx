@@ -31,7 +31,7 @@ const Home: NextPage = () => {
 
   const getUsers = async (username: string) => {
     const res = await octokit.rest.search.users({
-      q: `type:user ${username} in:login`,
+      q: `${username} in:login`,
       per_page: 8,
       page: page,
     });
