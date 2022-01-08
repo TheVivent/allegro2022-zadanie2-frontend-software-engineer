@@ -7,6 +7,7 @@ import UserCard from "../components/usercard";
 import { Container, Row, Col, Pagination } from "react-bootstrap";
 import { Endpoints } from "@octokit/types";
 import LoadingSpinner from "../components/loader";
+import SmartPaginator from "../components/smartpaginator";
 
 const octokit = new Octokit();
 type GitHubUser =
@@ -20,6 +21,7 @@ interface PageInfo {
 const Home: NextPage = () => {
   const [users, setUsers] = useState<GitHubUser[]>([]);
   const [searchQuerry, setSearchQuerry] = useContext(SearchContext);
+  const [lastUsername, setLastUsername] = useState<string>("");
   const [loadingTimeout, setLoadingTimeout] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState<PageInfo>({
@@ -32,7 +34,7 @@ const Home: NextPage = () => {
     return () => {
       clearTimeout(loadingTimeout);
     };
-  });
+  }, []);
 
   useEffect(() => {
     getUsers(searchQuerry);
@@ -67,10 +69,12 @@ const Home: NextPage = () => {
       );
 
       setPage((prevPage) => ({
-        ...prevPage,
+        currentPage: username === lastUsername ? prevPage.currentPage : 1,
         pages: pages,
       }));
     }
+
+    setLastUsername(username);
     setIsLoading(false);
   };
 
@@ -100,38 +104,14 @@ const Home: NextPage = () => {
         ))}
       </Row>
       <Row>
-        <Col xs={12}>
-          {/* <Pagination className="my-2">
-            <Pagination.Prev
-              disabled={page.currentPage === 1}
-              onClick={() => handlePageChange(page.currentPage - 1)}
-            />
-
-            {page.pages > 20 ? (
-              <>
-                <Pagination.First onClick={() => handlePageChange(1)} />
-                <Pagination.Ellipsis disabled />
-
-                <Pagination.Ellipsis disabled />
-                <Pagination.Last onClick={() => handlePageChange(page.pages)} />
-              </>
-            ) : (
-              Array.from(Array(page.pages), (x, i) => (
-                <Pagination.Item
-                  key={i}
-                  onClick={() => handlePageChange(i + 1)}
-                  active={page.currentPage === i + 1}
-                >
-                  {i + 1}
-                </Pagination.Item>
-              ))
-            )}
-
-            <Pagination.Next
-              disabled={page.currentPage === page.pages}
-              onClick={() => handlePageChange(page.currentPage + 1)}
-            />
-          </Pagination> */}
+        <Col className="py-2">
+          <SmartPaginator
+            xs={5}
+            md={10}
+            currentPage={page.currentPage}
+            totalPages={page.pages}
+            onPageChange={handlePageChange}
+          />
         </Col>
       </Row>
     </Container>

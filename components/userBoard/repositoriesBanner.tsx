@@ -17,6 +17,7 @@ import {
 } from "react-bootstrap";
 import { Octokit } from "@octokit/rest";
 import RepoCard from "../repocard";
+import SmartPaginator from "../smartpaginator";
 
 type GitHubRepo =
   Endpoints["GET /search/repositories"]["response"]["data"]["items"][0];
@@ -186,45 +187,21 @@ RepoBanner.RepoList = RepoList;
 const Pages = () => {
   const [page, setPage] = useContext(RepoPageContext);
 
+  const handlePageChange = (x: number) => {
+    setPage((prevPage: PageInfo) => ({
+      ...prevPage,
+      currentPage: x,
+    }));
+  };
+
   return (
-    <Pagination className="my-2">
-      <Pagination.Prev
-        className="ms-auto"
-        disabled={page.currentPage === 1}
-        onClick={() =>
-          setPage((prev: PageInfo) => ({
-            ...prev,
-            currentPage: prev.currentPage - 1,
-          }))
-        }
-      />
-
-      {Array.from(Array(page.pages), (x, i) => (
-        <Pagination.Item
-          key={i}
-          onClick={() =>
-            setPage((prev: PageInfo) => ({
-              ...prev,
-              currentPage: i + 1,
-            }))
-          }
-          active={page.currentPage === i + 1}
-        >
-          {i + 1}
-        </Pagination.Item>
-      ))}
-
-      <Pagination.Next
-        className="me-auto"
-        disabled={page.pages === page.currentPage}
-        onClick={() =>
-          setPage((prev: PageInfo) => ({
-            ...prev,
-            currentPage: prev.currentPage + 1,
-          }))
-        }
-      />
-    </Pagination>
+    <SmartPaginator
+      xs={5}
+      md={10}
+      currentPage={page.currentPage}
+      totalPages={page.pages}
+      onPageChange={handlePageChange}
+    />
   );
 };
 RepoBanner.Pages = Pages;

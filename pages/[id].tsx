@@ -39,7 +39,7 @@ export default function Page() {
     return () => {
       clearTimeout(userTimeout);
     };
-  });
+  }, []);
 
   useEffect(() => {
     getUser();
