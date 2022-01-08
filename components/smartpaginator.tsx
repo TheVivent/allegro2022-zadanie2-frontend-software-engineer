@@ -59,7 +59,7 @@ export default function SmartPaginator(props: PaginatorProps) {
     }
 
     calculatePages(totalPages, maxItems);
-  }, [totalPages, viewport]);
+  }, [totalPages, currentPage, viewport]);
 
   const calculatePages = (totalPages: number, maxItems: number) => {
     if (totalPages <= maxItems) {

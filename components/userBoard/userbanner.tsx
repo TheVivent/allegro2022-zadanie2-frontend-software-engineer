@@ -8,6 +8,7 @@ type GitHubUser = Endpoints["GET /users/{username}"]["response"]["data"];
 
 export default function UserBanner({ user }: { user: GitHubUser }) {
   const viewport = useViewport();
+  const isMobile = viewport === "xs" || viewport === "sm";
 
   return (
     <Container fluid className="m-0 p-0">
@@ -28,18 +29,10 @@ export default function UserBanner({ user }: { user: GitHubUser }) {
           </div>
           <Container fluid>
             <Row className="mt-1 text-center">
-              <Col
-                xs={12}
-                md={4}
-                className={viewport === "xs" ? "" : "border-end"}
-              >
+              <Col xs={12} md={4} className={isMobile ? "" : "border-end"}>
                 Obserwujących: {user.followers as number}
               </Col>
-              <Col
-                xs={12}
-                md={4}
-                className={viewport === "xs" ? "" : "border-end"}
-              >
+              <Col xs={12} md={4} className={isMobile ? "" : "border-end"}>
                 Obserwowanych: {user.following as number}
               </Col>
               <Col xs={12} md={4}>
@@ -59,7 +52,9 @@ export default function UserBanner({ user }: { user: GitHubUser }) {
                 >
                   <BsGithub size={64} />
                   <div></div>
-                  {user.html_url}
+                  <span className="d-none d-md-inline">
+                    {user.html_url as string}
+                  </span>
                 </a>
               </Col>
               {user.blog !== "" && (
@@ -72,7 +67,9 @@ export default function UserBanner({ user }: { user: GitHubUser }) {
                   >
                     <BsLink45Deg size={64} />
                     <div></div>
-                    {user.blog}
+                    <span className="d-none d-md-inline">
+                      {user.blog as string}
+                    </span>
                   </a>
                 </Col>
               )}

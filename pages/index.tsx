@@ -107,7 +107,7 @@ const Home: NextPage = () => {
         <Col className="py-2">
           <SmartPaginator
             xs={5}
-            md={10}
+            md={15}
             currentPage={page.currentPage}
             totalPages={page.pages}
             onPageChange={handlePageChange}

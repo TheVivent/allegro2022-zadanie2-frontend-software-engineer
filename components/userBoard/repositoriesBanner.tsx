@@ -197,7 +197,7 @@ const Pages = () => {
   return (
     <SmartPaginator
       xs={5}
-      md={10}
+      md={20}
       currentPage={page.currentPage}
       totalPages={page.pages}
       onPageChange={handlePageChange}
