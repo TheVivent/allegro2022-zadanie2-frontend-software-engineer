@@ -7,6 +7,7 @@ import { SearchContext } from "../components/navigation";
 import UserCard from "../components/usercard";
 import { Container, Row } from "react-bootstrap";
 import { Endpoints } from "@octokit/types";
+import LoadingSpinner from "../components/loader";
 
 const octokit = new Octokit();
 type GitHubUser =
@@ -16,33 +17,56 @@ const Home: NextPage = () => {
   const [users, setUsers] = useState<GitHubUser[]>([]);
   const [searchQuerry, setSearchQuerry] = useContext(SearchContext);
   const [page, setPage] = useState(1);
+  const [loadingTimeout, setLoadingTimeout] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // useEffect(() => {
-  //   getUsers(searchQuerry);
-  // }, []);
+  useEffect(() => {
+    return () => {
+      clearTimeout(loadingTimeout);
+    };
+  });
 
   useEffect(() => {
     getUsers(searchQuerry);
   }, [searchQuerry, page]);
 
   const getUsers = async (username: string) => {
-    const res = await octokit.rest.search.users({
-      q: `${username} in:login`,
-      per_page: 8,
-      page: page,
-    });
+    setIsLoading(true);
+    clearTimeout(loadingTimeout);
+
+    let res;
+
+    try {
+      res = await octokit.rest.search.users({
+        q: `${username} in:login`,
+        per_page: 8,
+        page: page,
+      });
+    } catch (e) {
+      setLoadingTimeout(
+        setTimeout(() => {
+          getUsers(username);
+        }, 3000)
+      );
+      return;
+    }
 
     if (res.status === 200) {
       setUsers(res.data.items as GitHubUser[]);
     }
-    console.log(res);
+    setIsLoading(false);
   };
+
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div>
       <Head>
-        <title>Allegro</title>
-        <meta name="description" content="Search" />
+        <title>Spring Tech zadanie 2</title>
+        <meta
+          name="description"
+          content="Aplikacja zbudowana na potrzeby rekrutacji Spring Tech E-xperience"
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Container className="mt-2">

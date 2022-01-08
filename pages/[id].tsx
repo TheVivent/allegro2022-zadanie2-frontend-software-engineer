@@ -14,6 +14,7 @@ import RepoCard from "../components/repocard";
 import LoadingSpinner from "../components/loader";
 import UserBanner from "../components/userBoard/userbanner";
 import RepoBanner from "../components/userBoard/repositoriesBanner";
+import Head from "next/head";
 
 const octokit = new Octokit();
 type GitHubUser = Endpoints["GET /users/{username}"]["response"]["data"];
@@ -82,6 +83,15 @@ export default function Page() {
 
   return (
     <Container>
+      <Head>
+        <title>repozytoria - {user_id}</title>
+        <meta
+          name="description"
+          content="Aplikacja zbudowana na potrzeby rekrutacji Spring Tech E-xperience"
+        />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
       <Row>
         <Col xs={12}>
           <UserBanner user={user} />
