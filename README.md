@@ -1,34 +1,34 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Allegro Spring TECH e-Xperience 2022
 
-## Getting Started
+## zadanie 2
 
-First, run the development server:
+> Adam Kapuściński
 
-```bash
-npm run dev
-# or
-yarn dev
+## instrukcja uruchomienia
+
+Aplikacja została napisana przy użyciu frameworka Next.js i do uruchomienia wymaga menadżera pakietów npm/yarn \
+Instalacja zależności:
+
+```
+npm install
+yarn install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Aplikacja udostępnia standardowe skrypty które można uruchomić za pomocą
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```
+npm run <skrypt>
+yarn <skrypt>
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+dostępne skrypty:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+- `dev` - uruchamia serwer deweloperski
+- `build` - buduje aplikację
+- `start` - uruchamia serwer ze zbudowaną aplikacją
 
-## Learn More
+## założenia i uproszczenia
 
-To learn more about Next.js, take a look at the following resources:
+Jednym z problemów z którym zmierzyłem się przy okazji pisania aplikacji było ograniczenie API GitHuba, co do ilości zapytań jakie mogę wywoływać. Problem ten rozwiązałem w mało elegancki sposób (mocna naruszający DRY), jakim było ustawienie Timeoutu przy każdym nieudanym zapytaniu, który będzie próbował je powtórzyć. Zabezpieczyłem ten element w każdym miejscu aplikacji tak, aby nie było możliwe ustawienie wielu Timeoutów na raz oraz, aby Timeout czyszczony był przy usuwaniu komponentu.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Innym problemem z którym się zmierzyłem był kod, odpowiedzialny za listowanie repozytoriów wraz z paginacją oraz paskiem wyszukiwania był długi i mało czytelny, dlatego postanowiłem podzielić go na kilka komponentów umieszczonych w `components/userBoard/repositoriesBanner.tsx`. Był to mój pierwszy raz kiedy projektowałem komponent z pod-komponentami i dlatego nie jestem pewień, czy moje rozwiązanie tego problemu jest "właściwe". Uważam, że głównym problemem mojego rozwiązania jest, to że do przekazywania statusu na temat strony/listy komponentów/czy odbywa się ładowanie podawane jest pod-komponentom z użyciem kontekstu podawanego przez komponent główny. Nie jestem przekonany co do czytelności kodu przy takim rozwiązaniu, jednak jest to na pewno lepsze niż stworzenie jednego komponentu odpowiedzialnego za wszystko. Dodatkową zaletą jest to, że w łatwy sposób można np. przenieść paginację nad wyniki.
