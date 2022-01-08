@@ -3,9 +3,8 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { Octokit } from "@octokit/rest";
 import { SearchContext } from "../components/navigation";
-// import type { GitHubUser } from "../types";
 import UserCard from "../components/usercard";
-import { Container, Row } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { Endpoints } from "@octokit/types";
 import LoadingSpinner from "../components/loader";
 
@@ -13,12 +12,21 @@ const octokit = new Octokit();
 type GitHubUser =
   Endpoints["GET /search/users"]["response"]["data"]["items"][0];
 
+interface PageInfo {
+  currentPage: number;
+  pages: number;
+}
+
 const Home: NextPage = () => {
   const [users, setUsers] = useState<GitHubUser[]>([]);
   const [searchQuerry, setSearchQuerry] = useContext(SearchContext);
-  const [page, setPage] = useState(1);
   const [loadingTimeout, setLoadingTimeout] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState<PageInfo>({
+    currentPage: 1,
+    pages: 1,
+  });
+  const perPage = 12;
 
   useEffect(() => {
     return () => {
@@ -39,8 +47,8 @@ const Home: NextPage = () => {
     try {
       res = await octokit.rest.search.users({
         q: `${username} in:login`,
-        per_page: 8,
-        page: page,
+        per_page: perPage,
+        page: page.currentPage,
       });
     } catch (e) {
       setLoadingTimeout(
@@ -72,7 +80,9 @@ const Home: NextPage = () => {
       <Container className="mt-2">
         <Row xs={1} md={4}>
           {users?.map((user) => (
-            <UserCard key={user.id} user={user} />
+            <Col key={user.id} className="my-2">
+              <UserCard user={user} />
+            </Col>
           ))}
         </Row>
       </Container>

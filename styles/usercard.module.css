@@ -1,0 +1,14 @@
+.scale:hover {
+  -webkit-transform: scale(0.9);
+  -moz-transform: scale(0.9);
+  -ms-transform: scale(0.9);
+  -o-transform: scale(0.9);
+  transform: scale(0.9);
+  transition: 100ms;
+  color: rgb(46, 46, 46);
+}
+
+.scale {
+  transition: 100ms;
+  color: #6c757d;
+}

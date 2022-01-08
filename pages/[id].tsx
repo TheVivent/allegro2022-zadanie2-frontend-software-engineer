@@ -69,6 +69,9 @@ export default function Page() {
     if (data.status === 200) {
       setUser(data.data);
     }
+
+    console.log(data);
+
     setUserLoading(false);
   };
 

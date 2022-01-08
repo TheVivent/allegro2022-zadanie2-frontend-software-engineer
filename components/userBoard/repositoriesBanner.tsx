@@ -94,9 +94,7 @@ const SearchBar = ({ userLogin }: { userLogin: string }) => {
     let data;
     try {
       data = await octokit.rest.search.repos({
-        q: `user:${userLogin} ${repoSearch} ${
-          repoSearch === "" ? "" : "in:name"
-        }`,
+        q: `user:${userLogin} fork:true ${repoSearch} in:name`,
         sort: sorting as GitHubSorting,
         order: "desc",
         per_page: perPage,
@@ -121,6 +119,8 @@ const SearchBar = ({ userLogin }: { userLogin: string }) => {
         pages: Math.ceil(pages),
       }));
     }
+
+    console.log(data);
 
     setReposLoading(false);
   };
