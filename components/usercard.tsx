@@ -6,34 +6,44 @@ import { Endpoints } from "@octokit/types";
 import Link from "next/link";
 import style from "../styles/usercard.module.css";
 import { BsGithub, BsGeoAlt } from "react-icons/bs";
+import { FC } from "react";
 
 type GitHubUser =
   Endpoints["GET /search/users"]["response"]["data"]["items"][0];
 
 export default function UserCard({ user }: { user: GitHubUser }) {
   const viewport = useViewport();
+  const isMobile = viewport === "xs" || viewport === "sm";
 
-  const ReadyImage = () => (
+  const ReadyImage: FC = () => (
     <div className={`text-start text-md-center p-1 ${style.scale}`}>
       <Image
         className="rounded-circle shadow-sm"
         src={user.avatar_url}
         alt={user.login + "avatar"}
-        width={viewport === "xs" ? 64 : 128}
-        height={viewport === "xs" ? 64 : 128}
+        width={isMobile ? 64 : 128}
+        height={isMobile ? 64 : 128}
       />
     </div>
   );
 
-  if (viewport === "xs")
+  if (isMobile) {
     return (
-      <div>
-        <ReadyImage />
-      </div>
+      <Link href={`/${user.login}`} passHref>
+        <a className="link-secondary text-decoration-none">
+          <div className="bg-light rounded-3 d-flex align-content-center">
+            <ReadyImage />
+            <div className="flex-fill align-self-center text-end me-2">
+              <h5 className="">{user.login}</h5>
+            </div>
+          </div>
+        </a>
+      </Link>
     );
+  }
 
   return (
-    <Card>
+    <Card className="bg-light h-100">
       <Link href={`/${user.login}`} passHref>
         <a>
           <Card.Img as={ReadyImage} variant="top" />
@@ -56,35 +66,5 @@ export default function UserCard({ user }: { user: GitHubUser }) {
         </Card.Text>
       </Card.Body>
     </Card>
-  );
-
-  return (
-    <div
-      className="bg-warning p-1 rounded-3"
-      style={viewport !== "xs" ? { height: "300px" } : ({} as CSSProperties)}
-    >
-      <div className="d-flex flex-row flex-md-column align-content-stretch align-middle">
-        <Link href={`/${user.login}`}>
-          <a className="text-decoration-none link-success">
-            <div>
-              <Image
-                className="rounded-circle border-2 align-self-center align-self-md-auto shadow-sm"
-                src={user.avatar_url}
-                alt={user.login + "avatar"}
-                width={viewport === "xs" ? 64 : 128}
-                height={viewport === "xs" ? 64 : 128}
-              />
-            </div>
-            <div className="text-end text-md-center px-2 align-self-center align-self-md-auto flex-grow-1">
-              <h5>{user.login}</h5>
-            </div>
-          </a>
-        </Link>
-        <div>
-          <a href={user.html_url}>Link do GitHub</a>
-        </div>
-        <div>{user.id}</div>
-      </div>
-    </div>
   );
 }

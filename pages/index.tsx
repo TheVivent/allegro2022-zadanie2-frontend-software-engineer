@@ -4,7 +4,7 @@ import Head from "next/head";
 import { Octokit } from "@octokit/rest";
 import { SearchContext } from "../components/navigation";
 import UserCard from "../components/usercard";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Pagination } from "react-bootstrap";
 import { Endpoints } from "@octokit/types";
 import LoadingSpinner from "../components/loader";
 
@@ -36,7 +36,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     getUsers(searchQuerry);
-  }, [searchQuerry, page]);
+  }, [searchQuerry, page.currentPage]);
 
   const getUsers = async (username: string) => {
     setIsLoading(true);
@@ -61,14 +61,29 @@ const Home: NextPage = () => {
 
     if (res.status === 200) {
       setUsers(res.data.items as GitHubUser[]);
+      const pages = Math.min(
+        Math.ceil(res.data.total_count / perPage),
+        Math.ceil(1000 / perPage)
+      );
+
+      setPage((prevPage) => ({
+        ...prevPage,
+        pages: pages,
+      }));
     }
     setIsLoading(false);
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  const handlePageChange = (page: number) => {
+    setPage((prevPage) => ({
+      ...prevPage,
+      currentPage: page,
+    }));
+  };
 
   return (
-    <div>
+    <Container className="mt-2">
+      {isLoading && <LoadingSpinner />}
       <Head>
         <title>Spring Tech zadanie 2</title>
         <meta
@@ -77,16 +92,49 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Container className="mt-2">
-        <Row xs={1} md={4}>
-          {users?.map((user) => (
-            <Col key={user.id} className="my-2">
-              <UserCard user={user} />
-            </Col>
-          ))}
-        </Row>
-      </Container>
-    </div>
+      <Row xs={1} md={4}>
+        {users?.map((user) => (
+          <Col key={user.id} className="mt-2">
+            <UserCard user={user} />
+          </Col>
+        ))}
+      </Row>
+      <Row>
+        <Col xs={12}>
+          {/* <Pagination className="my-2">
+            <Pagination.Prev
+              disabled={page.currentPage === 1}
+              onClick={() => handlePageChange(page.currentPage - 1)}
+            />
+
+            {page.pages > 20 ? (
+              <>
+                <Pagination.First onClick={() => handlePageChange(1)} />
+                <Pagination.Ellipsis disabled />
+
+                <Pagination.Ellipsis disabled />
+                <Pagination.Last onClick={() => handlePageChange(page.pages)} />
+              </>
+            ) : (
+              Array.from(Array(page.pages), (x, i) => (
+                <Pagination.Item
+                  key={i}
+                  onClick={() => handlePageChange(i + 1)}
+                  active={page.currentPage === i + 1}
+                >
+                  {i + 1}
+                </Pagination.Item>
+              ))
+            )}
+
+            <Pagination.Next
+              disabled={page.currentPage === page.pages}
+              onClick={() => handlePageChange(page.currentPage + 1)}
+            />
+          </Pagination> */}
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

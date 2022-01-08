@@ -26,5 +26,5 @@ export default function useViewport() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  return viewport;
+  return viewport as Viewport;
 }
