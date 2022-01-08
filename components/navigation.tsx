@@ -5,7 +5,7 @@ import { createContext, useContext, useState } from "react";
 import { useRouter } from "next/router";
 import { BsSearch } from "react-icons/bs";
 
-export const SearchContext = createContext<[any, any]>(["", () => {}]);
+export const SearchContext = createContext<[string, Function]>(["", () => {}]);
 export const SearchProvider = ({ children }: any) => {
   const [search, setSearch] = useState("allegro");
   return (
@@ -21,9 +21,9 @@ export default function Navigation() {
   const [search, setSearch] = useContext(SearchContext);
   const [searchQuerry, setSearchQuerry] = useState(search);
 
-  const handleFormSubmit = (e: any) => {
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSearch(e.target.elements.search.value);
+    setSearch(searchQuerry);
     router.push(`/`);
   };
 

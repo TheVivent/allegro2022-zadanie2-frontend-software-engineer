@@ -17,9 +17,9 @@ const Home: NextPage = () => {
   const [searchQuerry, setSearchQuerry] = useContext(SearchContext);
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    getUsers(searchQuerry);
-  }, []);
+  // useEffect(() => {
+  //   getUsers(searchQuerry);
+  // }, []);
 
   useEffect(() => {
     getUsers(searchQuerry);
@@ -34,8 +34,8 @@ const Home: NextPage = () => {
 
     if (res.status === 200) {
       setUsers(res.data.items as GitHubUser[]);
-      console.log(res.data.items);
     }
+    console.log(res);
   };
 
   return (

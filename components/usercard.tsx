@@ -8,11 +8,7 @@ import Link from "next/link";
 type GitHubUser =
   Endpoints["GET /search/users"]["response"]["data"]["items"][0];
 
-interface Props {
-  user: GitHubUser;
-}
-
-export default function UserCard({ user }: Props) {
+export default function UserCard({ user }: { user: GitHubUser }) {
   const breakpoint = useViewport();
 
   return (

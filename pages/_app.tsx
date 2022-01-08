@@ -1,14 +1,6 @@
 import "../styles/globals.scss";
 import type { AppProps } from "next/app";
-import {
-  Container,
-  FloatingLabel,
-  Form,
-  Navbar,
-  Button,
-  Nav,
-} from "react-bootstrap";
-import Link from "next/link";
+import { Container } from "react-bootstrap";
 import { useCurrentTheme } from "use-theme-hook";
 import { useEffect } from "react";
 import Navigation, { SearchProvider } from "../components/navigation";
