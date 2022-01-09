@@ -56,7 +56,7 @@ const Home: NextPage = () => {
       setLoadingTimeout(
         setTimeout(() => {
           getUsers(username);
-        }, 3000)
+        }, 10000)
       );
       return;
     }

@@ -1,6 +1,6 @@
 # Allegro Spring TECH e-Xperience 2022
 
-## zadanie 2
+## zadanie 2 - Frontend Software Engineer
 
 > Adam Kapuściński
 
@@ -27,8 +27,16 @@ dostępne skrypty:
 - `build` - buduje aplikację
 - `start` - uruchamia serwer ze zbudowaną aplikacją
 
-## założenia i uproszczenia
+## ograniczenia aplikacji
 
-Jednym z problemów z którym zmierzyłem się przy okazji pisania aplikacji było ograniczenie API GitHuba, co do ilości zapytań jakie mogę wywoływać. Problem ten rozwiązałem w mało elegancki sposób (mocna naruszający DRY), jakim było ustawienie Timeoutu przy każdym nieudanym zapytaniu, który będzie próbował je powtórzyć. Zabezpieczyłem ten element w każdym miejscu aplikacji tak, aby nie było możliwe ustawienie wielu Timeoutów na raz oraz, aby Timeout czyszczony był przy usuwaniu komponentu.
+Najpoważniejszym ograniczeniem aplikacji jest to, że korzysta ona z nieautoryzowanego dostępu do API GitHuba, co ogranicza ilość zapytań, jakie może wykonać klient. W związku z tym, zbyt szybkie przejście np. na stronę piętnastą wyszukiwarki użytkowników i wybranie losowego użytkownika, może spowodować, że lista repozytoriów wczytywać będzie się 10-20 sekund (przyjęty timeout między kolejnymi zapytaniami)
 
-Innym problemem z którym się zmierzyłem był kod, odpowiedzialny za listowanie repozytoriów wraz z paginacją oraz paskiem wyszukiwania był długi i mało czytelny, dlatego postanowiłem podzielić go na kilka komponentów umieszczonych w `components/userBoard/repositoriesBanner.tsx`. Był to mój pierwszy raz kiedy projektowałem komponent z pod-komponentami i dlatego nie jestem pewień, czy moje rozwiązanie tego problemu jest "właściwe". Uważam, że głównym problemem mojego rozwiązania jest, to że do przekazywania statusu na temat strony/listy komponentów/czy odbywa się ładowanie podawane jest pod-komponentom z użyciem kontekstu podawanego przez komponent główny. Nie jestem przekonany co do czytelności kodu przy takim rozwiązaniu, jednak jest to na pewno lepsze niż stworzenie jednego komponentu odpowiedzialnego za wszystko. Dodatkową zaletą jest to, że w łatwy sposób można np. przenieść paginację nad wyniki.
+## dodatkowe uwagi
+
+Wspomniany wyżej timeout pomiędzy zapytaniami realizowany jest przez zwykły `setTimeout` przechowywany w stanie komponentu. Przy każdej próbie wykonania danego typu zapytania czyszczony jest odpowiedni timeout i w razie niepowodzenia tworzony na nowo. Zapobiega to tworzeniu się pętli tworzących coraz to więcej zapytań. Każdy timeout jest także czyszczony przy każdym usunięciu komponentu, aby zapobiec wyciekom pamięci.
+
+Kod odpowiedzialny za listę repozytoriów został podzielony na 3 pod komponenty. Jest to pierwszy raz kiedy tworzyłem pod komponenty, dlatego nie jestem pewien, czy zrobiłem to poprawnie/optymalnie. Na pewno nie jestem zadowolony ze sposobu w jaki pod komponenty komunikują się między sobą (3 warstwy kontekstu, udostępniane przez komponent główny). Mimo, że nie jestem zadowolony co do implementacji, to uważam, że korzystanie z niego jest całkiem przyjemne. Pozwala to np, w prosty sposób przenieść paginację strony nad repozytoria.
+
+Bardzo zadowolony jestem z komponentu `SmartPaginator`. Pozawala on na łatwe i automatyczne dopasowywanie ilości wyświetlanych stron, w zależności od obecnego breakpointu bootstrapa. Rozwiązanie nie jest idealne, bo wykorzystuje na szybko utworzony hook sprawdzający breakpoint w zależności od szerokości strony, co nie jest idealne, ponieważ breakpointy w bootstrapie można modyfikować. Niemniej jednak, sam pomysł na ten komponent bardzo mi się spodobał i rozważam stworzenie takiego komponentu (oczywiście dopracowanego) i udostępnienie go na npmjs.com, aby móc z niego łatwo korzystać w przyszłych projektach.
+
+Działająca aplikacja dostępna jest pod adresem https://allegro-spring-tech-2022.vercel.app/

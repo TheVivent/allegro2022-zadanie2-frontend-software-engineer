@@ -29,7 +29,8 @@ type GitHubSorting =
   | undefined;
 
 export default function Page() {
-  const user_id = useRouter().query.id;
+  const router = useRouter();
+  const user_id = router.query.id;
   const [user, setUser] = useState<GitHubUser | null>(null);
   const [userLoading, setUserLoading] = useState(true);
 
@@ -55,13 +56,17 @@ export default function Page() {
       data = await octokit.rest.users.getByUsername({
         username: user_id,
       });
-    } catch (e) {
+    } catch (e: any) {
+      if (e?.status === 404) {
+        router.push("/");
+      }
+
       // w przypadku błędu (ograniczenie ilości zapytań)
       // spróbuj ponownie za 3 sekundy
       setUserTimeout(
         setTimeout(() => {
           getUser();
-        }, 3000)
+        }, 10000)
       );
       return;
     }

@@ -101,13 +101,18 @@ const SearchBar = ({ userLogin }: { userLogin: string }) => {
         per_page: perPage,
         page: page.currentPage,
       });
-    } catch (e) {
+    } catch (e: any) {
+      if (e?.status === 422) {
+        setRepos([]);
+        setReposLoading(false);
+        return;
+      }
       // w przypadku błędu (ograniczenie ilości zapytań)
       // spróbuj ponownie za 3 sekundy
       setLoadingTimeout(
         setTimeout(() => {
           getRepos();
-        }, 3000)
+        }, 10000)
       );
       return;
     }
