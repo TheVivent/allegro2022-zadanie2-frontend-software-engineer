@@ -29,7 +29,7 @@ dostępne skrypty:
 
 ## ograniczenia aplikacji
 
-Najpoważniejszym ograniczeniem aplikacji jest to, że korzysta ona z nieautoryzowanego dostępu do API GitHuba, co ogranicza ilość zapytań, jakie może wykonać klient. W związku z tym, zbyt szybkie przejście np. na stronę piętnastą wyszukiwarki użytkowników i wybranie losowego użytkownika, może spowodować, że lista repozytoriów wczytywać będzie się 10-20 sekund (przyjęty timeout między kolejnymi zapytaniami)
+Najpoważniejszym ograniczeniem aplikacji jest to, że korzysta ona z nieautoryzowanego dostępu do API GitHuba, co ogranicza ilość zapytań, jakie może wykonać klient. W związku z tym, zbyt szybkie przejście np. na stronę piętnastą wyszukiwarki użytkowników i wybranie losowego użytkownika, może spowodować, że lista repozytoriów wczytywać będzie się 10-20 sekund (przyjęty timeout między kolejnymi zapytaniami).
 
 ## dodatkowe uwagi
 
@@ -38,5 +38,7 @@ Wspomniany wyżej timeout pomiędzy zapytaniami realizowany jest przez zwykły `
 Kod odpowiedzialny za listę repozytoriów został podzielony na 3 pod komponenty. Jest to pierwszy raz kiedy tworzyłem pod komponenty, dlatego nie jestem pewien, czy zrobiłem to poprawnie/optymalnie. Na pewno nie jestem zadowolony ze sposobu w jaki pod komponenty komunikują się między sobą (3 warstwy kontekstu, udostępniane przez komponent główny). Mimo, że nie jestem zadowolony co do implementacji, to uważam, że korzystanie z niego jest całkiem przyjemne. Pozwala to np, w prosty sposób przenieść paginację strony nad repozytoria.
 
 Bardzo zadowolony jestem z komponentu `SmartPaginator`. Pozawala on na łatwe i automatyczne dopasowywanie ilości wyświetlanych stron, w zależności od obecnego breakpointu bootstrapa. Rozwiązanie nie jest idealne, bo wykorzystuje na szybko utworzony hook sprawdzający breakpoint w zależności od szerokości strony, co nie jest idealne, ponieważ breakpointy w bootstrapie można modyfikować. Niemniej jednak, sam pomysł na ten komponent bardzo mi się spodobał i rozważam stworzenie takiego komponentu (oczywiście dopracowanego) i udostępnienie go na npmjs.com, aby móc z niego łatwo korzystać w przyszłych projektach.
+
+Aplikacja posiada zarówno motyw ciemny jak i jasny. Dobiera go automatycznie na podstawie ustawień systemu.
 
 Działająca aplikacja dostępna jest pod adresem https://allegro-spring-tech-2022.vercel.app/
